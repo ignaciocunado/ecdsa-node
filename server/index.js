@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = 3042;
-const generateWallet = require("./scripts/walletgenerator")
+const walletgenerator = require("./scripts/walletgenerator.js")
+const generateWallet = walletgenerator.generateWallet
+const isKeyOfWallet = walletgenerator.isKeyOfWallet
 
 app.use(cors());
 app.use(express.json());
@@ -17,7 +19,6 @@ balances[generateWallet()] = 75;
 balances[generateWallet()] = 50;
 
 
-
 app.get("/balance/:address", (req, res) => {
   const { address } = req.params;
   const balance = balances[address] || 0;
@@ -25,7 +26,7 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, key ,recipient, amount } = req.body;
+  const { sender, privateKey, amount, recipient } = req.body;
 
   setInitialBalance(sender);
   setInitialBalance(recipient);
@@ -33,8 +34,8 @@ app.post("/send", (req, res) => {
   if (balances[sender] < amount) {
     res.status(400).send({ message: "Not enough funds!" });
   } 
-  else if(!checkIfRightSignature(address, signature)) {
-    res.status(400).send({message: "Unauthorised, please provide a valid signature"})
+  else if(!isKeyOfWallet(sender, privateKey)) {
+    res.status(400).send({message: "Unauthorised, please provide a valid private key"})
   }
   else {
     balances[sender] -= amount;
@@ -53,6 +54,3 @@ function setInitialBalance(address) {
   }
 }
 
-function checkIfRightSignature(signature) {
-  return false;
-}
