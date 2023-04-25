@@ -2,15 +2,21 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = 3042;
+const generateWallet = require("./scripts/walletgenerator")
 
 app.use(cors());
 app.use(express.json());
 
 const balances = {
-  "0x1": 100,
-  "0x2": 50,
-  "0x3": 75,
 };
+/**
+ * Generate new wallets with generator and set the balances
+ */
+balances[generateWallet()] = 100;
+balances[generateWallet()] = 75;
+balances[generateWallet()] = 50;
+
+
 
 app.get("/balance/:address", (req, res) => {
   const { address } = req.params;
@@ -19,7 +25,7 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, signature,recipient, amount } = req.body;
+  const { sender, key ,recipient, amount } = req.body;
 
   setInitialBalance(sender);
   setInitialBalance(recipient);

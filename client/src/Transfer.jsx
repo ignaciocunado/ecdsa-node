@@ -15,7 +15,7 @@ function Transfer({ address, setBalance }) {
         data: { balance },
       } = await server.post(`send`, {
         sender: address,
-        signature: signature,
+        key: key,
         amount: parseInt(sendAmount),
         recipient,
       });
