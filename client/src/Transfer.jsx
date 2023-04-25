@@ -10,8 +10,6 @@ function Transfer({ address, setBalance, privateKey }) {
   async function transfer(evt) {
     evt.preventDefault();
     try {
-      console.log(address)
-      console.log(privateKey)
       const {
         data: { balance },
       } = await server.post(`send`, {
